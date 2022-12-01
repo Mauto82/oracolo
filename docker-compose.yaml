@@ -1,12 +1,9 @@
 version: "3.8"
-
 services:
   python:
-    stdin_open: true 
-    tty: true 
     build:
       context: ./dockerfiles
-      dockerfile: pithon.dockerfile
+      dockerfile: Dockerfile
     command: python3 ./oracolo.py 20221203 5
     volumes:
       - ./app:/usr/app/src:delegated
