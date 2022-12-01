@@ -4,6 +4,6 @@ services:
     build:
       context: ./dockerfiles
       dockerfile: Dockerfile.python
-    command: python3 ./oracolo.py 20221203 5
+    command: python3 ./oracolo.py 20221111 MI
     volumes:
       - ./app:/usr/app/src:delegated
