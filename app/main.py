@@ -11,20 +11,30 @@ def main():
         sys.exit(1)
 
     date = sys.argv[1]
-    wheel = sys.argv[2]
-
-    config = Config()
-    service = LottoService(config)
-    formatter = OutputFormatter()
+    wheel = sys.argv[2].upper()
 
     try:
+        config = Config()
+        service = LottoService(config)
+        formatter = OutputFormatter()
+
+        # Inizializza e addestra il modello
         service.initialize_predictor("decision_tree")
         service.train_model()
-        prediction = service.predict(date, wheel)
 
-        print(formatter.format_prediction(date, wheel, prediction))
+        # Effettua la predizione
+        prediction, historical_data = service.predict(date, wheel)
+
+        # Formatta e mostra i risultati
+        print(formatter.format_prediction(
+            date=date,
+            wheel=wheel,
+            numbers=prediction,
+            historical_data=historical_data
+        ))
 
     except Exception as e:
+        formatter = OutputFormatter()
         print(formatter.format_error(str(e)))
         sys.exit(1)
 
