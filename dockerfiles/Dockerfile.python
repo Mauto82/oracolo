@@ -1,4 +1,3 @@
-# dockerfiles/Dockerfile.python
 FROM python:3.11-slim
 
 WORKDIR /usr/app/src
@@ -6,11 +5,20 @@ WORKDIR /usr/app/src
 # Installa le dipendenze di sistema necessarie
 RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
+    g++ \
+    make \
+    cmake \
     && rm -rf /var/lib/apt/lists/*
+
+# Installa prima pyarrow separatamente
+RUN pip install --no-cache-dir pyarrow==15.0.0
 
 # Copia e installa i requisiti
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Verifica l'installazione
+RUN python -c "import pyarrow; import pandas as pd; print(f'PyArrow version: {pyarrow.__version__}')"
 
 # Imposta variabili d'ambiente
 ENV PYTHONUNBUFFERED=1

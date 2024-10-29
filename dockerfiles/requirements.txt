@@ -1,5 +1,5 @@
 # app
-pandas==2.2.0
+pandas[performance]==2.2.0
 scikit-learn==1.4.0
 python-dotenv==1.0.0
 # tests
