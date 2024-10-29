@@ -1,0 +1,15 @@
+services:
+  oracolo-test:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile.python
+    command: pytest
+    volumes:
+      - ./app:/usr/app/src:delegated
+      - ./tests:/usr/app/src/tests:delegated
+      - ./coverage:/usr/app/src/coverage:delegated
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONPATH=/usr/app/src
+    container_name: oracolo-test

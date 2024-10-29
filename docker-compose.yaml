@@ -1,0 +1,15 @@
+services:
+  oracolo:
+    build:
+      context: ./dockerfiles
+      dockerfile: Dockerfile.python
+    command: python3 -u ./cli.py
+    stdin_open: true
+    tty: true
+    volumes:
+      - ./app:/usr/app/src:delegated
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONPATH=/usr/app/src
+      - TERM=xterm-256color
