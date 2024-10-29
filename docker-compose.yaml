@@ -1,9 +1,16 @@
-version: "3.8"
+# docker-compose.yaml
 services:
-  python:
+  lotto-predictor:
     build:
       context: ./dockerfiles
       dockerfile: Dockerfile.python
-    command: python3 ./oracolo.py 20221111 MI
+    command: python3 ./main.py ${DATE:-20221111} ${WHEEL:-MI}
     volumes:
       - ./app:/usr/app/src:delegated
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import pandas; import sklearn"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

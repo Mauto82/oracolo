@@ -1,5 +1,17 @@
-FROM python:3.8
+# dockerfiles/Dockerfile.python
+FROM python:3.11-slim
 
 WORKDIR /usr/app/src
 
-RUN pip install pandas scikit-learn
+# Installa le dipendenze di sistema necessarie
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia e installa i requisiti
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Imposta variabili d'ambiente
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
