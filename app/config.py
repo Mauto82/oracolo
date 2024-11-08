@@ -20,5 +20,5 @@ class Config:
         'RO': 8,
         'TO': 9,
         'VE': 10,
-        'NZ': 11
+        'RN': 11
     })
