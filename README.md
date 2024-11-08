@@ -72,9 +72,10 @@ stats <wheel>         - Show statistics for a specific wheel
 
 ruote                 - Show available wheels
 
-convert [in] [out]    - Convert historical data file to application format
-                        Example: convert storico.txt estratti.csv
-                        If no files specified, uses configured paths
+convert               - Convert historical data file from
+                        https://www.giocodellotto-online.it/lotto/estrazioni/archivio
+                        to application format. 
+                        (download the storico.txt file and put it in /data application directory)
 
 clear                 - Clear the screen
 
