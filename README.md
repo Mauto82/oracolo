@@ -72,6 +72,10 @@ stats <wheel>         - Show statistics for a specific wheel
 
 ruote                 - Show available wheels
 
+convert [in] [out]    - Convert historical data file to application format
+                        Example: convert storico.txt estratti.csv
+                        If no files specified, uses configured paths
+
 clear                 - Clear the screen
 
 help                  - Show this message
@@ -129,10 +133,10 @@ docker-compose run --rm oracolo
 .
 ├── app/
 │   ├── cli.py                              # Interactive CLI
-│   ├── config.py                            # Configuration
+│   ├── config.py                           # Configuration
 │   ├── data/
-│   │   └── data_loader.py                  # Data Loading
-│   │   └── estrazioni-lotto.csv            # Data file
+│   │   ├── data_loader.py                  # Data Loading
+│   │   ├── estrazioni-lotto.csv            # Main data file
 │   ├── models/
 │   │   └── extraction.py                   # Data Models
 │   ├── predictors/
@@ -142,7 +146,8 @@ docker-compose run --rm oracolo
 │   ├── presentation/
 │   │   └── output_formatter.py             # Output Formatting
 │   └── services/
-│       └── lotto_service.py                # Business Logic
+│       ├── lotto_service.py                # Business Logic
+│       └── format_converter.py             # Data Format Converter
 ├── tests/
 ├── dockerfiles/
 └── docker-compose.yaml

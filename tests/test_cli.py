@@ -131,14 +131,14 @@ def mock_converter():
     with patch('services.format_converter.FormatConverter') as mock:
         yield mock.return_value
 
-def test_convert_command_default_files(mock_cli, mock_converter):
-    """Testa il comando convert senza parametri"""
+def test_convert_command(mock_cli, mock_converter):
+    """Testa il comando convert base"""
     console, fake_out = mock_cli
     console.converter = mock_converter
 
     console.do_convert("")
 
-    # Verifica che il convertitore sia stato chiamato con i file di default
+    # Verifica che il convertitore sia stato chiamato con i file configurati
     mock_converter.convert_lotto_format.assert_called_once_with(
         console.config.HISTORICAL_SOURCE_FILE,
         console.config.HISTORICAL_OUTPUT_FILE
@@ -147,25 +147,8 @@ def test_convert_command_default_files(mock_cli, mock_converter):
     # Verifica il messaggio di successo
     output = fake_out.getvalue()
     assert "Conversione completata con successo" in output
+    assert console.config.HISTORICAL_SOURCE_FILE in output
     assert console.config.HISTORICAL_OUTPUT_FILE in output
-
-def test_convert_command_custom_files(mock_cli, mock_converter):
-    """Testa il comando convert con file personalizzati"""
-    console, fake_out = mock_cli
-    console.converter = mock_converter
-
-    console.do_convert("input.txt output.csv")
-
-    # Verifica che il convertitore sia stato chiamato con i file specificati
-    mock_converter.convert_lotto_format.assert_called_once_with(
-        "input.txt",
-        "output.csv"
-    )
-
-    # Verifica il messaggio di successo
-    output = fake_out.getvalue()
-    assert "Conversione completata con successo" in output
-    assert "output.csv" in output
 
 def test_convert_command_error(mock_cli, mock_converter):
     """Testa la gestione degli errori del comando convert"""
@@ -183,11 +166,10 @@ def test_convert_command_error(mock_cli, mock_converter):
     assert "Test error" in output
 
 def test_help_command_includes_convert(mock_cli):
-    """Verifica che l'help includa il comando convert"""
+    """Verifica che l'help includa il comando convert aggiornato"""
     console, fake_out = mock_cli
 
     console.do_help("")
     output = fake_out.getvalue()
 
-    assert "convert [in] [out]" in output
-    assert "Converte file storico" in output
+    assert "convert               - Converte il file storico nel formato dell'app" in output

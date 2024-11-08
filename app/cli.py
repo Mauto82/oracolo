@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Optional
 from config import Config
 from services.lotto_service import LottoService
+from services.format_converter import FormatConverter
 from presentation.output_formatter import OutputFormatter
 
 class LottoConsole(cmd.Cmd):
@@ -24,7 +25,8 @@ Digita 'help' o '?' per la lista dei comandi.
         self.config = Config()
         self.service = LottoService(self.config)
         self.formatter = OutputFormatter()
-        
+        self.converter = FormatConverter(self.config)
+
         # Inizializzazione del modello (skip in test mode)
         if not hasattr(self.stdout, 'getvalue'):  # Non è uno StringIO
             try:
@@ -106,6 +108,42 @@ Digita 'help' o '?' per la lista dei comandi.
         except ValueError as e:
             print(self.formatter.format_error(str(e)), file=self.stdout)
 
+    def do_convert(self, arg: str) -> None:
+        """
+        Converte il file storico nel formato utilizzato dall'applicazione.
+        Uso: convert [input_file] [output_file]
+        Se non specificati, usa i file configurati in Config.
+        """
+        args = arg.split()
+
+        # Usa i path dalla configurazione se non specificati
+        input_file = self.config.HISTORICAL_SOURCE_FILE
+        output_file = self.config.HISTORICAL_OUTPUT_FILE
+
+        if len(args) >= 1:
+            input_file = args[0]
+            # Se il path non è assoluto, lo considera relativo alla directory data/
+            if not os.path.isabs(input_file):
+                input_file = os.path.join('data', input_file)
+
+        if len(args) >= 2:
+            output_file = args[1]
+            if not os.path.isabs(output_file):
+                output_file = os.path.join('data', output_file)
+
+        try:
+            # Assicurati che la directory di output esista
+            output_dir = os.path.dirname(output_file)
+            if output_dir:
+                os.makedirs(output_dir, exist_ok=True)
+
+            self.converter.convert_lotto_format(input_file, output_file)
+            print(f"\nConversione completata con successo!", file=self.stdout)
+            print(f"File convertito salvato in: {output_file}\n", file=self.stdout)
+        except Exception as e:
+            print(self.formatter.format_error(f"Errore durante la conversione: {str(e)}"),
+                  file=self.stdout)
+
     def do_clear(self, arg: str) -> None:
         """
         Pulisce lo schermo.
@@ -128,12 +166,14 @@ Digita 'help' o '?' per la lista dei comandi.
             print("     formato data: DD/MM/YYYY (es: 01/01/2024)", file=self.stdout)
             print("  stats <ruota>         - Mostra statistiche per una ruota", file=self.stdout)
             print("  ruote                 - Mostra le ruote disponibili", file=self.stdout)
+            print("  convert               - Converte il file storico nel formato dell'app", file=self.stdout)
             print("  clear                 - Pulisce lo schermo", file=self.stdout)
             print("  help                  - Mostra questo messaggio", file=self.stdout)
             print("  quit                  - Esci dal programma", file=self.stdout)
             print("\nEsempi:", file=self.stdout)
             print("  predict 01/01/2024 MI", file=self.stdout)
             print("  stats MI", file=self.stdout)
+            print("  convert", file=self.stdout)
             print(file=self.stdout)
 
     def do_quit(self, arg: str) -> bool:

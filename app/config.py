@@ -1,8 +1,11 @@
+from typing import Dict
+from dataclasses import dataclass, field
+
 @dataclass
 class Config:
     CSV_FILE: str = 'data/estrazioni-lotto.csv'
     HISTORICAL_SOURCE_FILE: str = 'data/storico.txt'
-    HISTORICAL_OUTPUT_FILE: str = 'data/estrazioni-lotto-converted.csv'
+    HISTORICAL_OUTPUT_FILE: str = 'data/estrazioni-lotto.csv'
     DATE_FORMAT: str = "%d/%m/%Y"
     CSV_DELIMITER: str = ';'
     HISTORICAL_DELIMITER: str = '\t'
