@@ -144,6 +144,70 @@ Digita 'help' o '?' per la lista dei comandi.
             print(self.formatter.format_error(f"Errore durante la conversione: {str(e)}"),
                   file=self.stdout)
 
+    def do_sistema(self, arg: str) -> None:
+        """
+        Crea un sistema basato sulla predizione per una data e ruota specifiche.
+
+        Uso: sistema <data> <ruota> <tipo> [parametri]
+
+        Tipi disponibili:
+            - integrale N: Tutte le possibili combinazioni di N numeri (2-4)
+            - ridotto N: Un sottoinsieme ottimizzato di combinazioni di N numeri (2-4)
+            - garantito N/P: Sistema che garantisce P punti con N numeri
+
+        Esempi:
+            sistema 01/01/2024 MI integrale 2    # Tutte le combinazioni di 2 numeri
+            sistema 01/01/2024 MI ridotto 3      # Sistema ridotto con terzine
+            sistema 01/01/2024 MI garantito 3/2  # Sistema che garantisce ambo su 3 numeri
+        """
+        args = arg.split()
+        if len(args) < 3:
+            error_msg = self.formatter.format_error(
+                "Uso corretto: sistema <data> <ruota> <tipo> [parametri]\n"
+                "Esempio: sistema 01/01/2024 MI integrale 2"
+            )
+            print(error_msg, file=self.stdout)
+            return
+
+        date, wheel, system_type = args[:3]
+        params = args[3] if len(args) > 3 else None
+
+        try:
+            # Ottiene la predizione
+            service_date = self._convert_date_format(date)
+            prediction, _ = self.service.predict(service_date, wheel.upper())
+
+            # Genera il sistema in base al tipo richiesto
+            if system_type.lower() == 'integrale':
+                if not params:
+                    raise ValueError("Specificare il numero di numeri per combinazione (2-4)")
+                n = int(params)
+                output = self.formatter.format_integral_system(prediction, n)
+
+            elif system_type.lower() == 'ridotto':
+                if not params:
+                    raise ValueError("Specificare il numero di numeri per combinazione (2-4)")
+                n = int(params)
+                output = self.formatter.format_reduced_system(prediction, n)
+
+            elif system_type.lower() == 'garantito':
+                if not params or '/' not in params:
+                    raise ValueError("Specificare numeri/punti (es: 3/2)")
+                nums, win = map(int, params.split('/'))
+                output = self.formatter.format_guaranteed_system(prediction, nums, win)
+
+            else:
+                raise ValueError(f"Tipo sistema '{system_type}' non valido")
+
+            print(output, file=self.stdout)
+
+        except ValueError as e:
+            error_msg = self.formatter.format_error(f"Errore: {str(e)}")
+            print(error_msg, file=self.stdout)
+        except Exception as e:
+            error_msg = self.formatter.format_error(f"Errore imprevisto: {str(e)}")
+            print(error_msg, file=self.stdout)
+
     def do_clear(self, arg: str) -> None:
         """
         Pulisce lo schermo.
@@ -162,16 +226,19 @@ Digita 'help' o '?' per la lista dei comandi.
             super().do_help(arg)
         else:
             print("\nComandi disponibili:", file=self.stdout)
-            print("  predict <data> <ruota> - Effettua una predizione", file=self.stdout)
+            print("  predict <data> <ruota>  - Effettua una predizione", file=self.stdout)
             print("     formato data: DD/MM/YYYY (es: 01/01/2024)", file=self.stdout)
-            print("  stats <ruota>         - Mostra statistiche per una ruota", file=self.stdout)
-            print("  ruote                 - Mostra le ruote disponibili", file=self.stdout)
-            print("  convert               - Converte il file storico nel formato dell'app", file=self.stdout)
-            print("  clear                 - Pulisce lo schermo", file=self.stdout)
-            print("  help                  - Mostra questo messaggio", file=self.stdout)
-            print("  quit                  - Esci dal programma", file=self.stdout)
+            print("  sistema <data> <ruota> <tipo> [params] - Crea sistemi di gioco", file=self.stdout)
+            print("     tipi: integrale N, ridotto N, garantito N/P", file=self.stdout)
+            print("  stats <ruota>          - Mostra statistiche per una ruota", file=self.stdout)
+            print("  ruote                  - Mostra le ruote disponibili", file=self.stdout)
+            print("  convert                - Converte il file storico nel formato dell'app", file=self.stdout)
+            print("  clear                  - Pulisce lo schermo", file=self.stdout)
+            print("  help                   - Mostra questo messaggio", file=self.stdout)
+            print("  quit                   - Esci dal programma", file=self.stdout)
             print("\nEsempi:", file=self.stdout)
             print("  predict 01/01/2024 MI", file=self.stdout)
+            print("  sistema 01/01/2024 MI integrale 2", file=self.stdout)
             print("  stats MI", file=self.stdout)
             print("  convert", file=self.stdout)
             print(file=self.stdout)

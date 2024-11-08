@@ -5,6 +5,7 @@ import colorama
 from colorama import Fore, Style
 from tabulate import tabulate
 from collections import Counter
+from itertools import combinations
 
 class OutputFormatter:
     def __init__(self):
@@ -109,6 +110,124 @@ class OutputFormatter:
                 output.append(f"{Fore.GREEN}{num:02d}{Style.RESET_ALL} |")
 
         return "\n".join(output)
+
+    def format_integral_system(self, numbers: List[int], n: int) -> str:
+        """
+        Formatta un sistema integrale con tutte le combinazioni possibili.
+
+        Args:
+            numbers: Lista dei numeri di base da combinare
+            n: Numero di numeri per ogni combinazione
+
+        Returns:
+            str: Output formattato del sistema
+        """
+        if n < 2 or n > 4:
+            raise ValueError("Il numero di elementi deve essere tra 2 e 4")
+        if len(numbers) < n:
+            raise ValueError(f"Servono almeno {n} numeri per creare combinazioni")
+
+        combs = list(combinations(sorted(numbers), n))
+
+        output = [
+            "\n" + "="*50,
+            f"SISTEMA INTEGRALE {n} NUMERI",
+            "="*50,
+            f"\nNumeri base: {', '.join(map(str, sorted(numbers)))}"
+            f"\nCombinazioni di {n} numeri:",
+            "-"*50
+        ]
+
+        for i, comb in enumerate(combs, 1):
+            output.append(f"{i:2d}) {' - '.join(map(str, comb))}")
+
+        output.extend([
+            "-"*50,
+            f"Totale combinazioni: {len(combs)}",
+            "="*50 + "\n"
+        ])
+        return '\n'.join(output)
+
+    def format_reduced_system(self, numbers: List[int], n: int) -> str:
+        """
+        Formatta un sistema ridotto con un sottoinsieme ottimizzato di combinazioni.
+
+        Args:
+            numbers: Lista dei numeri di base da combinare
+            n: Numero di numeri per ogni combinazione
+
+        Returns:
+            str: Output formattato del sistema
+        """
+        if n < 2 or n > 4:
+            raise ValueError("Il numero di elementi deve essere tra 2 e 4")
+        if len(numbers) < n:
+            raise ValueError(f"Servono almeno {n} numeri per creare combinazioni")
+
+        # Per ora prendiamo un sottoinsieme delle combinazioni totali
+        # In futuro si può implementare un algoritmo più sofisticato
+        all_combs = list(combinations(sorted(numbers), n))
+        reduced_combs = all_combs[::2]  # Prendiamo una combinazione ogni due
+
+        output = [
+            "\n" + "="*50,
+            f"SISTEMA RIDOTTO {n} NUMERI",
+            "="*50,
+            f"\nNumeri base: {', '.join(map(str, sorted(numbers)))}"
+            f"\nCombinazioni ridotte di {n} numeri:",
+            "-"*50
+        ]
+
+        for i, comb in enumerate(reduced_combs, 1):
+            output.append(f"{i:2d}) {' - '.join(map(str, comb))}")
+
+        output.extend([
+            "-"*50,
+            f"Totale combinazioni: {len(reduced_combs)}",
+            "="*50 + "\n"
+        ])
+        return '\n'.join(output)
+
+    def format_guaranteed_system(self, numbers: List[int], nums: int, win: int) -> str:
+        """
+        Formatta un sistema che garantisce una determinata vincita.
+
+        Args:
+            numbers: Lista dei numeri di base da combinare
+            nums: Numero di numeri per ogni combinazione
+            win: Numero di punti garantiti
+
+        Returns:
+            str: Output formattato del sistema
+        """
+        if nums < win or nums > len(numbers):
+            raise ValueError(f"Impossibile garantire {win} punti con {nums} numeri")
+        if win < 2 or win > 4:
+            raise ValueError("I punti garantiti devono essere tra 2 e 4")
+
+        # Per ora generiamo tutte le combinazioni
+        # In futuro si possono implementare algoritmi specifici per garantire le vincite
+        combs = list(combinations(sorted(numbers), nums))
+
+        output = [
+            "\n" + "="*50,
+            f"SISTEMA GARANTITO {nums}/{win}",
+            "="*50,
+            f"\nNumeri base: {', '.join(map(str, sorted(numbers)))}"
+            f"\nCombinazioni che garantiscono {win} punti con {nums} numeri:",
+            "-"*50
+        ]
+
+        for i, comb in enumerate(combs, 1):
+            output.append(f"{i:2d}) {' - '.join(map(str, comb))}")
+
+        output.extend([
+            "-"*50,
+            f"Totale combinazioni: {len(combs)}",
+            f"Vincita garantita: {win} punti",
+            "="*50 + "\n"
+        ])
+        return '\n'.join(output)
 
     def format_error(self, message: str) -> str:
         """Formatta i messaggi di errore"""

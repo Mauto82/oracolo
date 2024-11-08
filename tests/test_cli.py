@@ -19,6 +19,9 @@ class MockConsole(LottoConsole):
         self.formatter.format_prediction.return_value = "Test Prediction Output"
         self.formatter.format_statistics.return_value = "Test Statistics Output"
         self.formatter.format_frequency_chart.return_value = "Test Frequency Chart"
+        self.formatter.format_integral_system.side_effect = lambda nums, n: "Test Integral System Output" if 2 <= n <= 4 else self.formatter.format_error("Il numero di numeri deve essere tra 2 e 4")
+        self.formatter.format_reduced_system.side_effect = lambda nums, n: "Test Reduced System Output" if 2 <= n <= 4 else self.formatter.format_error("Il numero di numeri deve essere tra 2 e 4")
+        self.formatter.format_guaranteed_system.side_effect = lambda nums, n, win: "Test Guaranteed System Output" if 2 <= win <= 4 and n >= win else self.formatter.format_error("Combinazione non valida")
 
     def preloop(self):
         pass
@@ -149,3 +152,53 @@ def test_convert_command(mock_cli, mock_converter):
     assert "Conversione completata con successo" in output
     assert "File convertito salvato in:" in output
     assert console.config.HISTORICAL_OUTPUT_FILE in output
+
+@pytest.fixture
+def mock_formatter():
+    """Fixture per il formatter con metodi per i sistemi"""
+    return OutputFormatter()
+
+def test_sistema_command_ridotto(mock_cli):
+    """Testa il comando sistema con tipo ridotto"""
+    console, fake_out = mock_cli
+    console.service.predict.return_value = ([1, 2, 3, 4, 5], [])
+
+    # Test sistema ridotto valido
+    console.do_sistema("01/01/2024 MI ridotto 3")
+    output = fake_out.getvalue()
+    assert "Test Reduced System Output" in output
+    console.formatter.format_reduced_system.assert_called_with([1, 2, 3, 4, 5], 3)
+
+    # Reset output
+    fake_out.seek(0)
+    fake_out.truncate()
+
+    # Test parametro invalido (5 è fuori range)
+    console.do_sistema("01/01/2024 MI ridotto 5")
+    assert "Errore: Il numero di numeri deve essere tra 2 e 4" in fake_out.getvalue()
+
+def test_sistema_command_invalid_input(mock_cli):
+    """Testa il comando sistema con input invalidi"""
+    console, fake_out = mock_cli
+
+    # Test comando senza parametri sufficienti
+    console.do_sistema("01/01/2024")
+    assert "Errore: Uso corretto" in fake_out.getvalue()
+
+    # Reset output
+    fake_out.seek(0)
+    fake_out.truncate()
+
+    # Test tipo sistema non valido
+    console.do_sistema("01/01/2024 MI invalido 2")
+    output = fake_out.getvalue()
+    # Verifica che ci sia un messaggio di errore, qualunque esso sia
+    assert output.startswith("Errore:")
+
+    # Reset output
+    fake_out.seek(0)
+    fake_out.truncate()
+
+    # Test data invalida
+    console.do_sistema("2024-01-01 MI integrale 2")
+    assert "Errore: Formato data non valido" in fake_out.getvalue()

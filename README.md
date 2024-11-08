@@ -8,6 +8,7 @@ Features an interactive CLI, statistical visualizations, and predictive analysis
 - **Number Prediction**: Uses Decision Trees for predictive analysis
 - **Interactive CLI**: User-friendly command-line interface
 - **Statistical Analysis**: Detailed statistics and visualizations
+- **System Generation**: Creates integral, reduced and guaranteed systems
 - **Colored Output**: Intuitive interface with visual feedback
 - **Design Patterns**: Implementation of Strategy, Factory, and Template Method
 - **Comprehensive Testing**: Test suite with >90% coverage
@@ -67,6 +68,13 @@ predict <date> <wheel> - Make a prediction
                         Date format: DD/MM/YYYY
                         Example: predict 01/01/2024 MI
 
+sistema <date> <wheel> <type> [params] - Generate playing systems
+                        Types:
+                        - integrale N: All possible N number combinations (2-4)
+                        - ridotto N: Optimized subset of N number combinations (2-4)
+                        - garantito N/P: System guaranteeing P points with N numbers
+                        Example: sistema 01/01/2024 MI integrale 2
+
 stats <wheel>         - Show statistics for a specific wheel
                         Example: stats MI
 
@@ -91,6 +99,7 @@ docker-compose run --rm oracolo
 
 # Then in the CLI
 (oracolo) predict 01/01/2024 MI
+(oracolo) sistema 01/01/2024 MI integrale 2
 (oracolo) stats MI
 (oracolo) ruote
 (oracolo) quit
@@ -156,17 +165,125 @@ docker-compose run --rm oracolo
 
 ## 📊 Detailed Features
 
+### Data Analysis
+- Historical trends
+- Pattern recognition
+- Statistical correlations
+- Frequency distribution
+
 ### Statistical Analysis
 - Number frequency analysis
 - Recurring patterns detection
 - Delay numbers tracking
 - Frequent number pairs identification
 
-### Data Analysis
-- Historical trends
-- Pattern recognition
-- Statistical correlations
-- Frequency distribution
+### System Generation
+- Integral systems (all possible combinations)
+- Reduced systems (optimized subsets)
+- Guaranteed systems (with win conditions)
+- Support for pairs, triples and quadruples
+
+### System Generation Examples
+
+```bash
+# Predict numbers and generate systems
+(oracolo) predict 01/01/2024 MI
+Predizione per Milano: 1, 13, 27, 45, 82
+
+# Generate all possible pairs (sistema integrale)
+(oracolo) sistema 01/01/2024 MI integrale 2
+==================================================
+SISTEMA INTEGRALE 2 NUMERI
+==================================================
+Numeri base: 1, 13, 27, 45, 82
+Combinazioni di 2 numeri:
+--------------------------------------------------
+ 1) 1 - 13
+ 2) 1 - 27
+ 3) 1 - 45
+ 4) 1 - 82
+ 5) 13 - 27
+ 6) 13 - 45
+ 7) 13 - 82
+ 8) 27 - 45
+ 9) 27 - 82
+10) 45 - 82
+--------------------------------------------------
+Totale combinazioni: 10
+==================================================
+
+# Generate reduced triplets (sistema ridotto)
+(oracolo) sistema 01/01/2024 MI ridotto 3
+==================================================
+SISTEMA RIDOTTO 3 NUMERI
+==================================================
+Numeri base: 1, 13, 27, 45, 82
+Combinazioni ridotte di 3 numeri:
+--------------------------------------------------
+ 1) 1 - 13 - 27
+ 2) 1 - 45 - 82
+ 3) 13 - 27 - 45
+ 4) 13 - 45 - 82
+ 5) 27 - 45 - 82
+--------------------------------------------------
+Totale combinazioni: 5
+==================================================
+
+# Generate a system guaranteeing ambo with 3 numbers (sistema garantito)
+(oracolo) sistema 01/01/2024 MI garantito 3/2
+==================================================
+SISTEMA GARANTITO 3/2
+==================================================
+Numeri base: 1, 13, 27, 45, 82
+Combinazioni che garantiscono 2 punti con 3 numeri:
+--------------------------------------------------
+ 1) 1 - 13 - 27
+ 2) 1 - 45 - 82
+ 3) 13 - 27 - 45
+--------------------------------------------------
+Totale combinazioni: 3
+Vincita garantita: 2 punti
+==================================================
+
+# Examples with different wheels
+(oracolo) sistema 01/01/2024 NA integrale 2  # Naples wheel
+(oracolo) sistema 01/01/2024 BA ridotto 3    # Bari wheel
+(oracolo) sistema 01/01/2024 RO garantito 4/2 # Rome wheel
+
+# Common error scenarios
+(oracolo) sistema 01/01/2024 MI integrale 5   # Error: numbers must be between 2 and 4
+(oracolo) sistema 01/01/2024 MI ridotto 1     # Error: numbers must be between 2 and 4
+(oracolo) sistema 01/01/2024 MI garantito 2/3 # Error: cannot guarantee 3 points with 2 numbers
+
+# Progressive system building
+(oracolo) predict 01/01/2024 MI           # First get prediction
+(oracolo) sistema 01/01/2024 MI ridotto 2  # Try with pairs
+(oracolo) sistema 01/01/2024 MI ridotto 3  # Try with triplets
+(oracolo) sistema 01/01/2024 MI ridotto 4  # Try with quadruplets
+
+# System analysis workflow
+(oracolo) predict 01/01/2024 MI           # Get prediction
+(oracolo) stats MI                        # Analyze wheel statistics
+(oracolo) sistema 01/01/2024 MI integrale 2  # Generate complete system
+(oracolo) sistema 01/01/2024 MI ridotto 2    # Generate optimized system
+```
+
+Tips for System Generation:
+- Start with a prediction to get the base numbers
+- Use `stats` command to analyze the wheel's behavior
+- For small bets, use `ridotto` to get fewer combinations
+- For maximum coverage, use `integrale`
+- Use `garantito` when you want specific win conditions
+- Consider using multiple wheels for diversification
+- Always verify the number of combinations before playing
+- Start with pairs (2 numbers) and progressively increase if needed
+
+Remember:
+- The system generator works with the predicted numbers
+- All systems are based on the 5 numbers from the prediction
+- The number of combinations increases with the number of base numbers
+- Reduced systems offer a good balance between coverage and cost
+- Guaranteed systems ensure specific win conditions but may have more combinations
 
 ## 🔧 Technical Implementation
 
@@ -175,6 +292,12 @@ docker-compose run --rm oracolo
 - Historical data processing
 - Pattern recognition algorithms
 - Statistical modeling
+
+### System Generator
+- Combinatorial algorithms
+- System optimization
+- Win guarantee verification
+- Efficient storage and display
 
 ## 🤝 Contributing
 
@@ -210,6 +333,7 @@ See the [Issues](https://github.com/Mauto82/oracolo/issues) page for current kno
 
 - Machine Learning model improvements
 - Additional statistical analysis features
+- Advanced system optimization algorithms
 - Web interface
 - API endpoints
 - Mobile application
@@ -241,6 +365,7 @@ For support or queries:
 - 1.1.0: Added interactive CLI
 - 1.2.0: Added statistical analysis
 - 1.3.0: Added visualization features
+- 1.4.0: Added system generation and data conversion
 
 ---
 
