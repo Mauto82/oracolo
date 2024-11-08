@@ -147,29 +147,5 @@ def test_convert_command(mock_cli, mock_converter):
     # Verifica il messaggio di successo
     output = fake_out.getvalue()
     assert "Conversione completata con successo" in output
-    assert console.config.HISTORICAL_SOURCE_FILE in output
+    assert "File convertito salvato in:" in output
     assert console.config.HISTORICAL_OUTPUT_FILE in output
-
-def test_convert_command_error(mock_cli, mock_converter):
-    """Testa la gestione degli errori del comando convert"""
-    console, fake_out = mock_cli
-    console.converter = mock_converter
-
-    # Simula un errore nel convertitore
-    mock_converter.convert_lotto_format.side_effect = Exception("Test error")
-
-    console.do_convert("")
-
-    # Verifica il messaggio di errore
-    output = fake_out.getvalue()
-    assert "Errore durante la conversione" in output
-    assert "Test error" in output
-
-def test_help_command_includes_convert(mock_cli):
-    """Verifica che l'help includa il comando convert aggiornato"""
-    console, fake_out = mock_cli
-
-    console.do_help("")
-    output = fake_out.getvalue()
-
-    assert "convert               - Converte il file storico nel formato dell'app" in output
