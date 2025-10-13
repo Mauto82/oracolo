@@ -44,12 +44,14 @@ class TestReducedSystem:
 class TestGuaranteedSystem:
     def test_valid_guarantee(self, sample_numbers):
         system = GuaranteedSystem()
-        combinations = system.find_minimum_guaranteed_combinations(sample_numbers, 3, 2)
+        system_size = 3
+        win_size = 2
+        combinations = system.find_minimum_guaranteed_combinations(sample_numbers, system_size, win_size)
         assert len(combinations) > 0
 
-        # Verifica che ogni combinazione contenga almeno un ambo
-        for comb in combinations:
-            assert system.verify_guarantee(comb, 2)
+        # Verifica che le combinazioni garantiscano la copertura sui numeri base del sistema
+        base_numbers = sorted(sample_numbers)[:system_size]
+        assert system.verify_guarantee(combinations, set(base_numbers), win_size)
 
     def test_invalid_guarantee_size(self, sample_numbers):
         system = GuaranteedSystem()
